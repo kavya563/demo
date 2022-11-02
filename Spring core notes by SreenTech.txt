@@ -1,0 +1,544 @@
+Introduction :
+======================
+       What is spring and why introduced into market?
+       "The main goal of spring framework is to make J2EE application development was easier"
+          J2EE : Servlet, JSP, RMI, EJB..etc
+       Drawbacks:
+=================
+               1. Tightly Coupling - Applications should extends Servlet, EJB, etc
+               2. Heavy weight : Application startup will take more extra processing
+               3. Boilerplate Code : Common code is getting repeated in multiple places todo some activity
+               4. Corss Cutting Concerns : doesn't support sec, txn inbuilt, need to implement manually
+
+Because of all these drawbacks of J2EE application, there is a person called Rod Johnson
+Не is from sun microsystem, he was disappointed with J2EE features and started something was called interface21
+interface21 was renamed as 'Spring'
+    
+Spring Advatages :
+======================
+1. Make Application development easier
+2. Light Weight
+3. Modularity :
+         core , mvc, batch, txn, sec, boot, webmvc, dao, aop ..etc
+4. POJO development : Spring doesn't force your application to extend or implement any spring f/w classes
+5. Popular : Loosely copuled and Unit Test code
+
+Why Spring is sustainin in market?
+Spring Redis --Redis Cache
+MongTemplate --Mongo DB
+	          KAFKA
+
+public class Account{
+//state --instance variable
+                            				  
+//behaviour-- methods/functions
+}
+
+ SOLID Principle:
+==============
+      SRP - Single Responsibility Principle - "Every class should have one Responsibility"
+      Class = User details + Account details    --wrong
+      Class = Either User details or Account details
+-->Every Project would have multiple classes if we follow SRP
+-->Every class developer should create the object
+->When the application is running these objects should interact with another object
+
+dependent: It is an object which is depending on another object to get some information —
+
+dependency : It is an object required by another object to carryout the functionality
+
+Spring Core :
+==============
+-->Spring core is the base module for all of the other module.
+-->It used to manager the Object dependencies
+-->In project development there would multiple classes, if we want communicate one object with another object then we should communciate via interface
+-->Using this module spring will create the required objects and supply to the application
+	i.e. developer no need create any object in application developement
+
+
+How Spring will provide the objects?
+
+How to get the object from spring?
+
+To implement spring core we should follow 3 steps
+
+1. configuration 	2. Dependency Injector	3.Get the beans and use wherever required
+
+What happens when we areare BeanFactory Object?
+
+	BeanFactory factory = new XMLBeanFactory(new ClasspathResource("xml file"));
+
+1. It will read the xml file and validate it, if the xml is valid then
+2. XMLBeanFactory creates inmemory logical memory partion inside JVM
+3. Loads the spring bean configuration file and place metadata in the logical memory partition
+4. The logical memroy partition created by XMLBeanFactory is called I0C container and it returns the refence of ioc container as Beanfactory
+
+5. 	DogOwner dogOwner = beanFactory.getBean("dogowner") ;
+
+		1. beanFactory will goes to ioc container (logical memory) and searching for the bean with given id ("dogowner"), if the dogOwner is not found then it will thorws exception and exit applicaton
+
+		2. Once the bean definition found then it will read the corresponding class name and loads the class into JVM memory and instantiates the object of the class
+
+IOC principle :
+============
+	 collaboration of objects and managing the life cyle object is called
+
+		collaboration - managing dependencies
+
+		lifecycle -- instantion and destruction
+
+Manage the dependencies :
+========================
+1. dependency lookup : If the developer write the code to manually goto container and get the object is called “dependency lookup”
+
+2. dependency injection : automatically get the dependencies objects
+
+Note :
+=====
+	 container will store the objects references but objects will be stored in jvm.
+
+-->Container is software or hardware? No
+-->Container is just like HashMap
+
+	HashMap<key, value> where key = bean id and value =classname
+
+-->Spring will use reflections to create the objects inside jvm
+
+What is the difference between DI and 0c?
+Sol : IOC - Inversion of controller
+
+	Inversion - A-->B-->C , if a class will have multiple dependencies then get all the dependencies through one class
+
+	Yes, Dependency Injection is the one type of Inversion of Control.
+============================================================================================================
+Dependency Injection :
+=============================
+It is the process of getting the objects from spring container, instead of created by the developers
+
+	1. Setter Injection 						2. Constructor Injection
+
+class A{ 								class B{ 					class A{
+Bb;													 Bb;
+A(B b){ 									} 				public void setB(B b){
+this.b = b;													this.b=b;
+}													}
+													}
+}
+
+
+Setter Injection : The dependent object is injected into targetted object via setter methods is called SI
+
+Constructor Injection : The dependent object is injected into targetted object via constructor is called cI
+
+	Constructor Injection												 Setter Injection
+
+1. If the dependency is mandatory 											1. If the dependency is optional
+
+2. If the dependency is final 												2. If the dependency is nonfinal
+
+3. When there is a cyclic dependency it is not supported									3. Tt is possible for Cyclic dependency
+
+
+ 
+
+A(B b){           B(A a){													 Note: we con make our setter injection also mandatory?
+
+}		}												Sol: @Required -- we are forcibly making dependency mandatory for Setter 																Injection
+
+ 
+
+We did application developement for consutructor DI, setter DI using XML configuration
+=============================================================================================================================
+
+Difficulties or Drawbacks of XML
+==============================
+
+1. Need to learn XML to work with xml configuration
+2. TypeSafety : no typesafety, if we pass wrong reference also it will consider
+	a. XML can't recognize the error during compiletime, it would identify at runtime only
+3. Readability :
+	XML and java in different places, need to keep switch between xml, java which effects readability of the code
+
+4. Maintaince :
+	if too many configurations then difficult to maintaince,
+	sometimes duplicate ids mighe be configured
+
+To overcome these problems, we should use java configuration
+============================================================
+
+How many ways configure bean in spring?
+
+Sol : <bean> or @Bean or @Component
+
+-->@Component is a java bean, which is used to decalre at class level
+
+-->If you will not declare any name to @Component then default name as classname
+-->we can configure our own name to @Component
+
+pack com.st 					pack com.st.abc 							@com. abe
+@Component					 @Component							 @Component
+public class A{ 					public class B{ 							public class C{
+B b;
+
+//constructor injection
+@Autowired
+public A(B b){
+this.b =b;
+}
+//setter injection
+@Autowired
+public void seta(B b){
+this.b = b;
+}
+
+//filed level injection
+@Autowired 
+pirvate B b;
+==========================================================
+<beans>
+<component-scan basepackage="com.st, com.abc"> // it will scan all the classe of com.st and its packages
+</beans>
+
+@confiugration
+@ComponentScan(basePackage={"com.st","com.abc")
+public class JavaConfig{
+
+}
+==========================================
+How componentscan will work?
+
+S01 : using <component-scan> element in xml or @ComponentScan annotation in java config
+========================================================================
+
+Dependency Injection (DI)
+======================
+
+DI ------- 		XML Config -- SI, CI | Manual Configuration
+		Java Config -- SI, CI | Developer will write configuration manually
+
+Autowiring }-- 	automatic configuration with the help of @Component, @Autowired annotation
+		@Component - is used to make pojo class as spring bean
+		@Autowired - is used to creat the dependency injection
+
+Autowired --	 CI, SI, Feild Level Injection }-- XML config, Java Config
+
+Q) Who is going to process @Component, @Autowired?
+
+Sol - Spring has provided some source code to behi their functionality
+
+	#1. The process of spring f/w looking for identifying presence of @Component annotation and then creating the object is called componentscan
+
+	#2. @Component annotation detection is not enabled by default, i.e. it is default behaviour
+		i.e. @Componentscan disabled by default
+	#3. We need to explicitly enable it
+
+Q) Any reason why it is disabled?
+Sol - 	There will be 19@ jars in project, @Component could be add any where in classpath.
+	If @Componentscan enabled then spring has to search in every class in classpath
+	It will take so much of processing time on scanning
+
+# If we want work with @Component then we have to enable it using @Componentscan annotation.
+@Componentscan annotation enable explicitly using xml config or java config
+
+# By default will scan current package only
+
+@ComponentScan(basepackages="com.st")
+@ComponentScan(basepackages={"com.st", "com.abe", "com. xyz") }
+@ComponentScan(basepackageClasses=B.class)
+@ComponentScan(basepackageClasses={A.class,B.class})
+
+project basepackage="com.st.spring” 0/p:c1,c¢2,¢3,c4,¢5,c6
+
+ 
+
+basepackag com.st.core” O/p: ¢4,c5,cé
+com
+  |-st
+    |-spring
+           |-beans
+                  |-c2
+                  |-c2
+                  |-¢3
+                  |-core
+                       |-c4
+                       |-cs
+                       |-util
+                            |-c6
+
+|-pom. xml
+
+basepackage="com.st.spring" o/p:c1,c2,c3,c4,c5,c6
+basepackage="com.st.core" 0/p: c4,c5,c6
+
+-->Autowired Feild level injection is not recomanded because
+
+	1. we can't write unit testing as dependencies hidden
+	2. we can't write conditions
+
+-->If the class doesn't have @Component, still we can use @ComponentScan with @Bean, XML config
+	i.e. @ComponentScan will work with @Bean, XML configuration
+
+-->Sometimes DataSource, JdbcTemplate, RestTemplate..etc doesn't have @Component. i.e. we should go with @Bean
+annotation only
+
+-->In realtime all the below combinations we should use
+
+	a. xml config
+	b. xml with java config
+	c. java config with autowired
+
+@Lazy:
+===========
+	 This annotation is used to create the object when first request will come
+	  Instead of scan and create the objects during startup
+
+   
+ 
+
+Note : 
+======  
+1. If we use XML then easily migrate to other projects it is just like replacing XML config with another config
+2. If you use java-config or autowired then difficult to rate from Java to other framework
+
+
+@Primary
+==============
+-->It will give priority to one bean than another beans
+-->We can't use primary morethan one bean, i.e. its like switch statement, default bean it will give
+-->If you are not sure what is the default then dont use @Primary annotation
+
+@Qualifier
+===============
+-->It is used Dependency Inject as "byName”
+-->It is used to setting name or alias name to bean
+-->based on qualifier it will execute corresponding backend system
+
+
+Spring Scope:
+===================
+Scope - lifetime
+Bean Scope - “Lifetime of a bean in the container”
+“when a bean gets create by container and when it gets detroyed"
+
+Types of Scopes
+===================
+1. singleton 2. prototype 3. Request 4. Session 5. Application 6. Global
+
+Singleton
+========
+“One Object per container per bean definition"
+
+-->Singleton beans will be created during container startup and will stay in container untill it gets
+contianer destroyed
+-=->singleton scope = container live
+-->Singleton scope is not same as java singleton design pattern
+	i.e. java singleton design pattern is used only one object for whole application
+<bean id="abc" class="ABC"> // per bean definition only one object will be created 
+<bean id="abc1" class="ABC"> // create another object with another new id
+
+Prototype
+===========
+	
+“multiple objects per bean definition per container”
+-->whenver there a need for the bean a new object will be created
+-->its like use and throw object. if need create object
+-->Spring container always holds reference singleton beans which it has created, as it is resused using
+	that reference
+-->spring container doesn't hold any reference of the prototype beans which it has created
+-->once object is completed of prototype then it will get garbase collected by the JVM
+
+Note: By default all the spring beans are singleton scope
+
+xml config : <bean id="blackInk" class="com.st.BlackInk" scope="prototype">
+java config : @Scope(-) // if we will not decalre then default scope is singleton
+
+scope Combinations:
+=================
+
+class A{ 						class B{								 class B injected into class A
+
+														i.e. Class A is depending on Class B
+
+Case 1: A, B are Singleton . One Singleton bean injected to another Singleton bean
+Case 2 : A, B are protorype, One Prototype bean injected to another Prototype bean
+Case 3 : Ais protype, B is singleton, One Singleton bean injected to another Prototype bean
+Case 4: A is snigletong, B is prototype, One Prototype bean injected to another Singleton bean
+
+Note : "Never injected a shorter lived bean into a longer lived bean"
+
+Project Flow : 	Controller --> Service --> DAO ---> Database
+
+When we should use singleton and prototype,
+		A--controller	 B-- service
+
+When use singleton and prototype?
+=============================
+If the Class will not have any instance variable then preferred singleton
+
+	i.e. class doesn't hold any sate.
+
+If the class will have any instance variables (holding state) then preferred prototype because instance variable will be varied from object to object.
+
+
+@Lazy annoation:
+
+ 
+
+#1. Spring @Lazy annotation indicates that a bean will be lazily intialized.
+#2. The @Lazy annoation can be annotated with class level, method level
+	a. @Component, @Configration - use @Lazy annotation
+	b. @Bean - use @Lazy annotation at method level
+#3. The default scope of bean is singleton , Generally singleton beans are pre intialized to discover the errors in the ocnfiguration.
+
+#4. To intialize a bean lazily we can use @Lazy annoation in java config or use lazy-init attribut on the <bean> element in XML configuration based application
+
+#5. If we want early intialize with @Lazy annotation then use @Lazy(value=false)
+
+#4. Lazy Intialization of bean means
+
+	a. Bean will not intialized untill referenced/called by another bean
+
+	b. explicity called that bean from ApplicationContext
+
+#6. @Lazy annotation can also used with @Autowired
+
+#7. This annotation is introduced in spring 3.0
+
+How to load the properties files and get the values from properties file in spring:
+=============================================================
+sample.properties
+
+usernam=sreenu
+password=welcome123
+java.util.Properties p = new Properties();
+p.load("sample. properties");
+String uname = p.getProperty("usernam");
+String pwd = p.getProeprty("password");
+
+@PropertySource(classpath: {filename path}) // is used load the properties file|
+
+Read the values from properties file
+	1. Using Environment class Object - this is provided by spring
+	2. Using @Value annotation
+
+-->org.springframework.core.env.Environment class is configured as bean in spring container, this would happen during application startup
+-->How to get the bean from the container , using @Autowired
+
+Note :
+
+	#1. @PropertySource annotation is used to load the properties files
+	#2. To get the values from properties file object using Environment object or @Value Annotation
+	#3. PropertySourcesPlaceholderConfigurer class will recognize the @Value annotation
+	#4. we can set default value of property keys in @Value("${propertykey:default value}")
+
+		a. if the property key is not found in properties file then it will get default value
+		b. if propertykey is present in properties file and default value then always will give property file key value only
+		c. If the propertykey is not found in properties file and default value not provided the it will throw an error
+
+	java.lang.IllegalArgumentException: Could not resolve placeholder '‘blackink.brand’ in string value "${blackink.brand}"
+
+Spring Core Annoations:
+==========================
+
+1. @Configuration
+2. @Bean
+3. @Component
+4. @ComponentScan
+5. @Autowired
+6. @ImportResource
+7. @Import
+8. @Scope
+9. @Lazy
+10. @Primay
+11. @Qualifier
+12. @PropertySource
+13. @Value
+14. @Profile
+15. @Required - to make setter injection also mandatory, on top of setter methods you should declare
+		@Required annoation, so that for setter also dependency was mandatory
+
+16. @Named - (<bean> or @Bean or @Component )
+
+17. @Inject - @Autowired
+
+
+How to load the properties file based on environment ?
+
+Sol: In realtime we will have different environments or profiles
+
+without spring:
+=============
+	configure profile name (dev,test,prod) inside server configuration
+	catalina.properties
+		environemnt=dev
+during application startup, all the value will be set to JVM
+
+System. setProperty("environemnt", dev);
+
+Application code :
+===============
+	String env = System.getProperty("env");
+	String filename = "sample-"+env+".properties"
+	java.util.Properties p = new Properties();
+	p.load("sample.properties");
+
+String uname = p.getProperty("usernam") ;
+String pwd = p.getProeprty("password");
+
+-->@Profile annotation is used to get the environment value from the jvm which was setted during application
+startup.
+
+Examples
+==========
+	1. environments or profiles - dev, test, uat,prod
+	2. how to load envionrment based properties file
+		Sol : Using @Profile annotation
+	3. If it is standlone application, we have to set the envionment using the below options
+		a. System. getProperty(“envirionemn!")
+
+		b. spring.profiles.active=dev
+
+	If it is web application, we have to set the environment at server level
+
+		Tomcat : catalina.properties ==> env=dev
+
+		Jboss : server.xml env=dev
+
+	If we use docker then set the enviornment name inside docker file
+
+whenever we set the environment value, during application startup it would be set to jvm
+
+Q)How to get the values from JVM?
+	1. String env = System.getProperty("environment”)
+
+	2. Using @Profile annoation, this will use internally System.getProperty() annotation only
+
+-->@Profile annoation is used at class level, method level
+
+	a. if @Profile will use at class level then no.of profiles = no.of configuration classes
+	b. if @Profile will use at method level then one configuration class which contains
+		no.of profiles = no.of methods (each method will take care to load  each profile properties file)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
